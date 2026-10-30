@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>KC Online 新品發表會報名</title>
+<style>
+  :root{
+    --navy:#14284b; --navy-2:#1f3a68; --amber:#f2a516; --bg:#f4f6fa; --card:#fff;
+    --text:#1c2333; --muted:#5c667a; --line:#d9dee8; --err:#c62828; --ok:#06c755;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    line-height:1.6;-webkit-text-size-adjust:100%}
+  header{background:var(--navy);color:#fff;padding:28px 16px 22px}
+  header .tag{display:inline-block;font-size:12px;letter-spacing:.08em;color:var(--navy);
+    background:var(--amber);border-radius:4px;padding:2px 8px;font-weight:700}
+  header h1{margin:10px 0 4px;font-size:22px;line-height:1.35}
+  header p{margin:0;font-size:14px;color:#c9d3e6}
+  main{max-width:480px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border-radius:12px;padding:20px 16px;box-shadow:0 1px 3px rgba(20,40,75,.08)}
+  .hidden{display:none!important}
+  label{display:block;font-weight:700;font-size:15px;margin:14px 0 6px}
+  label .req{color:var(--err);margin-left:2px}
+  input{width:100%;font-size:16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
+  input:focus{outline:2px solid var(--navy-2);border-color:transparent}
+  .hint{font-size:13px;color:var(--muted);margin-top:4px}
+  .field-err{font-size:13px;color:var(--err);margin-top:4px;min-height:0}
+  button,.btn{display:block;width:100%;margin-top:22px;padding:14px;font-size:17px;font-weight:700;
+    border:0;border-radius:10px;background:var(--navy);color:#fff;text-align:center;text-decoration:none;cursor:pointer}
+  button[disabled]{opacity:.55}
+  .btn-line{background:var(--ok)}
+  .notice{background:#fff7e3;border:1px solid #f5d27c;border-radius:8px;padding:12px;font-size:14px;margin-bottom:6px}
+  .notice a{color:var(--navy-2);font-weight:700}
+  .msg{font-size:15px}
+  .done h2{margin:0 0 8px;font-size:20px;color:var(--navy)}
+  .spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;
+    animation:spin 1s linear infinite;margin:24px auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 32px}
+</style>
+</head>
+<body>
+<header>
+  <span class="tag">11 / 14 新品發表會</span>
+  <h1>科基語測 KC Online<br>LINE 一鍵報名</h1>
+  <p>填寫三個欄位即完成報名</p>
+</header>
+
+<main>
+  <div id="loading" class="card"><div class="spinner"></div><p class="msg" style="text-align:center">載入中…</p></div>
+
+  <div id="fatal" class="card hidden"><p class="msg" id="fatalText"></p></div>
+
+  <form id="form" class="card hidden" novalidate>
+    <div id="friendNotice" class="notice hidden">
+      尚未加入官方帳號好友，優惠券會透過官方帳號發送，請先
+      <a id="addFriendLink" href="https://line.me/R/ti/p/%40470xvbqb">加入好友</a>。
+    </div>
+
+    <label for="name">姓名<span class="req">*</span></label>
+    <input id="name" name="name" autocomplete="name" maxlength="40" required>
+    <div class="field-err" id="nameErr"></div>
+
+    <label for="phone">手機號碼<span class="req">*</span></label>
+    <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="12" placeholder="09xxxxxxxx" required>
+    <div class="field-err" id="phoneErr"></div>
+
+    <label for="email">Email<span class="req">*</span></label>
+    <input id="email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="100" required>
+    <div class="field-err" id="emailErr"></div>
+
+    <p class="hint">送出即表示同意主辦單位以上述資料聯繫報名與發送優惠券事宜。</p>
+    <button id="submitBtn" type="submit">送出報名</button>
+    <div class="field-err" id="submitErr" style="text-align:center;margin-top:10px"></div>
+  </form>
+
+  <div id="done" class="card done hidden">
+    <h2>報名完成！</h2>
+    <p class="msg" id="doneText"></p>
+    <a id="sendLink" class="btn btn-line hidden" href="#">傳送報名確認到官方帳號</a>
+    <button id="closeBtn" type="button" class="hidden">關閉</button>
+  </div>
+</main>
+
+<footer>© 2026 科基語測 KC Online</footer>
+
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+  // ===== 設定 =====
+  const LIFF_ID = "";   // 建好 LIFF 後填入
+  const GAS_URL = "";   // Apps Script 網頁應用程式 /exec 網址
+  const OA_ID   = "@470xvbqb";
+  // =================
+
+  const $ = id => document.getElementById(id);
+  const show = id => $(id).classList.remove("hidden");
+  const hide = id => $(id).classList.add("hidden");
+
+  function fatal(text){ hide("loading"); hide("form"); $("fatalText").textContent = text; show("fatal"); }
+
+  function oaMessageUrl(text){
+    return "https://line.me/R/oaMessage/" + encodeURIComponent(OA_ID) + "/?" + encodeURIComponent(text);
+  }
+
+  async function main(){
+    if (!LIFF_ID || !GAS_URL) { fatal("報名頁尚未設定完成。"); return; }
+    try {
+      await liff.init({ liffId: LIFF_ID });
+    } catch (e) {
+      fatal("無法開啟報名頁，請用 LINE 開啟此連結後再試一次。"); return;
+    }
+    if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+
+    try {
+      const f = await liff.getFriendship();
+      if (!f.friendFlag) show("friendNotice");
+    } catch (e) { /* 無法判斷好友狀態時不顯示提示 */ }
+
+    hide("loading"); show("form");
+  }
+
+  function validate(){
+    let ok = true;
+    const name  = $("name").value.trim();
+    const phone = $("phone").value.replace(/[\s-]/g, "");
+    const email = $("email").value.trim();
+    $("nameErr").textContent = $("phoneErr").textContent = $("emailErr").textContent = "";
+    if (!name) { $("nameErr").textContent = "請填寫姓名"; ok = false; }
+    if (!/^09\d{8}$/.test(phone)) { $("phoneErr").textContent = "請填寫 09 開頭的 10 碼手機號碼"; ok = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $("emailErr").textContent = "Email 格式不正確"; ok = false; }
+    return ok ? { name, phone, email } : null;
+  }
+
+  async function sendConfirm(text){
+    // 只在一對一聊天室內開啟時自動傳送；其他情況改用預填訊息按鈕
+    let ctx = null;
+    try { ctx = liff.getContext(); } catch (e) {}
+    if (ctx && ctx.type === "utou" && liff.isInClient()) {
+      try {
+        await liff.sendMessages([{ type: "text", text }]);
+        return true;
+      } catch (e) { /* 改用按鈕 */ }
+    }
+    return false;
+  }
+
+  $("form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    $("submitErr").textContent = "";
+    const data = validate();
+    if (!data) return;
+
+    const idToken = liff.getIDToken();
+    if (!idToken) { liff.login({ redirectUri: location.href }); return; }
+
+    $("submitBtn").disabled = true;
+    $("submitBtn").textContent = "送出中…";
+    try {
+      const res = await fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ idToken, name: data.name, phone: data.phone, email: data.email })
+      });
+      const out = await res.json();
+      if (!out.ok) {
+        if (out.error === "auth") {
+          $("submitErr").textContent = "登入已過期，正在重新登入…";
+          setTimeout(() => liff.login({ redirectUri: location.href }), 800);
+          return;
+        }
+        throw new Error(out.error || "server");
+      }
+    } catch (e) {
+      $("submitErr").textContent = "送出失敗，請稍後再試一次。";
+      $("submitBtn").disabled = false;
+      $("submitBtn").textContent = "送出報名";
+      return;
+    }
+
+    const text = "已報名 " + data.name + " " + data.phone.slice(-3);
+    hide("form"); show("done");
+    const sent = await sendConfirm(text);
+    if (sent) {
+      $("doneText").textContent = "已自動傳送報名確認到官方帳號聊天室，優惠券將由官方帳號發送給您。";
+      if (liff.isInClient()) show("closeBtn");
+    } else {
+      $("doneText").textContent = "最後一步：請按下方按鈕，在官方帳號聊天室按「傳送」，我們核對後會發送優惠券給您。";
+      $("sendLink").href = oaMessageUrl(text);
+      show("sendLink");
+    }
+  });
+
+  $("closeBtn").addEventListener("click", () => liff.closeWindow());
+
+  main();
+</script>
+</body>
+</html>
