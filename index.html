@@ -269,7 +269,21 @@
     hide("loading");
     $("openLineBtn").href = IS_ANDROID ? ANDROID_INTENT : LIFF_URL;
     show("openInLine");
-    if (IS_ANDROID) location.href = ANDROID_INTENT;   // Android 自動跳轉
+    if (IS_ANDROID) {
+      location.href = ANDROID_INTENT;   // Android 自動跳轉
+    } else if (!triedIosScheme()) {
+      // iPhone：用舊格式觸發系統「要在 LINE 中打開嗎？」視窗（LINE 已宣布停用此格式，失效時仍有上方按鈕）
+      setTimeout(() => { location.href = "line://app/" + LIFF_ID; }, 300);
+    }
+  }
+
+  // iPhone 自動喚起只試一次，避免重複跳出視窗
+  function triedIosScheme(){
+    try {
+      if (sessionStorage.getItem("kcTried") === "1") return true;
+      sessionStorage.setItem("kcTried", "1");
+    } catch (e) {}
+    return false;
   }
 
   async function main(){
