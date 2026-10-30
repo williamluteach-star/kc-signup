@@ -134,19 +134,6 @@
     return ok ? { name, phone, email } : null;
   }
 
-  async function sendConfirm(text){
-    // 只在一對一聊天室內開啟時自動傳送；其他情況改用預填訊息按鈕
-    let ctx = null;
-    try { ctx = liff.getContext(); } catch (e) {}
-    if (ctx && ctx.type === "utou" && liff.isInClient()) {
-      try {
-        await liff.sendMessages([{ type: "text", text }]);
-        return true;
-      } catch (e) { /* 改用按鈕 */ }
-    }
-    return false;
-  }
-
   $("form").addEventListener("submit", async ev => {
     ev.preventDefault();
     $("submitErr").textContent = "";
@@ -181,16 +168,11 @@
     }
 
     const text = "已報名 " + data.name + " " + data.phone.slice(-3);
+    // 一律用按鈕開啟官方帳號聊天室，避免訊息誤傳到其他聊天室
     hide("form"); show("done");
-    const sent = await sendConfirm(text);
-    if (sent) {
-      $("doneText").textContent = "已自動傳送報名確認到官方帳號聊天室，優惠券將由官方帳號發送給您。";
-      if (liff.isInClient()) show("closeBtn");
-    } else {
-      $("doneText").textContent = "最後一步：請按下方按鈕，在官方帳號聊天室按「傳送」，我們核對後會發送優惠券給您。";
-      $("sendLink").href = oaMessageUrl(text);
-      show("sendLink");
-    }
+    $("doneText").textContent = "最後一步：請按下方綠色按鈕，會開啟「科基語測」官方帳號聊天室，按「傳送」即完成。我們核對後會發送優惠券給您。";
+    $("sendLink").href = oaMessageUrl(text);
+    show("sendLink");
   });
 
   $("closeBtn").addEventListener("click", () => liff.closeWindow());
