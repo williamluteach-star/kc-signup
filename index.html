@@ -100,6 +100,14 @@
 
   <div id="fatal" class="card hidden"><p class="msg" id="fatalText"></p></div>
 
+  <div id="openInLine" class="card done hidden">
+    <h2>請用 LINE 開啟報名</h2>
+    <p class="msg">報名需要用 LINE 登入，並由「科基語測」官方帳號傳送報到兌換券。請按下方按鈕切換到 LINE App。</p>
+    <a id="openLineBtn" class="btn btn-line" href="#">用 LINE 開啟報名頁</a>
+    <p class="hint">按了沒有反應？請點畫面右上角「⋯」，選「用瀏覽器開啟」後再按一次。</p>
+    <a id="stayBrowser" class="link-more" href="#">改在這個瀏覽器登入 LINE →</a>
+  </div>
+
   <form id="form" class="card hidden" novalidate>
     <div id="friendNotice" class="notice hidden">
       尚未加入官方帳號好友，優惠券會透過官方帳號發送，請先
@@ -211,6 +219,59 @@
     return "https://line.me/R/oaMessage/" + encodeURIComponent(OA_ID) + "/?" + encodeURIComponent(text);
   }
 
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const UA = navigator.userAgent;
+  const IS_ANDROID = /Android/i.test(UA);
+  const IS_MOBILE = IS_ANDROID || /iPhone|iPad|iPod/i.test(UA);
+  const LIFF_URL = "https://liff.line.me/" + LIFF_ID;
+  const ANDROID_INTENT = "intent://liff.line.me/" + LIFF_ID +
+    "#Intent;scheme=https;package=jp.naver.line.android;end";
+
+  function stayInBrowser(set){
+    try {
+      if (set) sessionStorage.setItem("kcStay", "1");
+      return sessionStorage.getItem("kcStay") === "1";
+    } catch (e) { return !!set; }
+  }
+
+  async function postJSON(payload){
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
+
+  // 備用：用隱藏表單送到後端（看不到回傳結果，只確認有送出）
+  async function postViaForm(payload){
+    const name = "kcpost" + Date.now();
+    const ifr = document.createElement("iframe");
+    ifr.name = name; ifr.style.display = "none";
+    document.body.appendChild(ifr);
+    await sleep(0);
+    const f = document.createElement("form");
+    f.method = "POST"; f.action = GAS_URL; f.target = name; f.style.display = "none";
+    const i = document.createElement("input");
+    i.type = "hidden"; i.name = "payload"; i.value = JSON.stringify(payload);
+    f.appendChild(i); document.body.appendChild(f);
+    return await new Promise(resolve => {
+      let done = false;
+      const finish = ok => { if (!done) { done = true; resolve(ok); } };
+      ifr.addEventListener("load", () => finish(true));
+      setTimeout(() => finish(false), 15000);
+      f.submit();
+    });
+  }
+
+  // 不是在 LINE 裡開啟（手機）→ 引導切到 LINE App
+  function showOpenInLine(){
+    hide("loading");
+    $("openLineBtn").href = IS_ANDROID ? ANDROID_INTENT : LIFF_URL;
+    show("openInLine");
+    if (IS_ANDROID) location.href = ANDROID_INTENT;   // Android 自動跳轉
+  }
+
   async function main(){
     if (!LIFF_ID || !GAS_URL) { fatal("報名頁尚未設定完成。"); return; }
     try {
@@ -218,6 +279,7 @@
     } catch (e) {
       fatal("無法開啟報名頁，請用 LINE 開啟此連結後再試一次。"); return;
     }
+    if (!liff.isInClient() && IS_MOBILE && !liff.isLoggedIn() && !stayInBrowser()) { showOpenInLine(); return; }
     if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
 
     try {
@@ -251,24 +313,27 @@
 
     $("submitBtn").disabled = true;
     $("submitBtn").textContent = "送出中…";
-    let out;
-    try {
-      const res = await fetch(GAS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ idToken, name: data.name, phone: data.phone, email: data.email })
-      });
-      out = await res.json();
-      if (!out.ok) {
-        if (out.error === "auth") {
-          $("submitErr").textContent = "登入已過期，正在重新登入…";
-          setTimeout(() => liff.login({ redirectUri: location.href }), 800);
-          return;
-        }
-        throw new Error(out.error || "server");
+    const payload = { idToken, name: data.name, phone: data.phone, email: data.email };
+    let out = null, errInfo = "";
+
+    // 先用一般連線送出，失敗重試一次
+    for (let i = 0; i < 2 && !out; i++) {
+      try { out = await postJSON(payload); }
+      catch (e) { errInfo = String((e && e.message) || e); await sleep(800); }
+    }
+    // 還是不行 → 改用表單方式送出（不受跨網域限制），結果交給排程核對
+    if (!out) {
+      const sent = await postViaForm(payload);
+      if (sent) out = { ok: true, pushed: false, viaForm: true };
+    }
+
+    if (!out || !out.ok) {
+      if (out && out.error === "auth") {
+        $("submitErr").textContent = "登入已過期，正在重新登入…";
+        setTimeout(() => liff.login({ redirectUri: location.href }), 800);
+        return;
       }
-    } catch (e) {
-      $("submitErr").textContent = "送出失敗，請稍後再試一次。";
+      $("submitErr").textContent = "送出失敗，請稍後再試一次。（" + (out ? out.error : errInfo || "連線失敗") + "）";
       $("submitBtn").disabled = false;
       $("submitBtn").textContent = "送出報名";
       return;
@@ -290,6 +355,12 @@
   });
 
   $("closeBtn").addEventListener("click", () => liff.closeWindow());
+
+  $("stayBrowser").addEventListener("click", ev => {
+    ev.preventDefault();
+    stayInBrowser(true);
+    liff.login({ redirectUri: location.href });
+  });
 
   // YouTube：先顯示縮圖，點了才載入播放器
   document.querySelectorAll(".yt").forEach(el => {
