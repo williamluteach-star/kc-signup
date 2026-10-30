@@ -40,16 +40,33 @@
     animation:spin 1s linear infinite;margin:24px auto}
   @keyframes spin{to{transform:rotate(360deg)}}
   footer{text-align:center;font-size:12px;color:var(--muted);padding:20px 16px 32px}
+  .card+.card{margin-top:14px}
+  .info h2{margin:0 0 10px;font-size:17px;color:var(--navy)}
+  .info dl{display:grid;grid-template-columns:3.2em 1fr;gap:8px 10px;margin:0;font-size:15px}
+  .info dt{font-weight:700;color:var(--muted)}
+  .info dd{margin:0}
+  .info .sub{font-size:13px;color:var(--muted)}
+  .info a{color:var(--navy-2)}
 </style>
 </head>
 <body>
 <header>
-  <span class="tag">11 / 14 新品發表會</span>
-  <h1>科基語測 KC Online<br>LINE 一鍵報名</h1>
-  <p>填寫三個欄位即完成報名</p>
+  <span class="tag">智啟未來・共創巔峰</span>
+  <h1>KC Online 全新智慧教育<br>生態系新品發表會</h1>
+  <p>竭誠歡迎您的加入｜LINE 一鍵報名</p>
 </header>
 
 <main>
+  <section class="card info">
+    <h2>活動資訊</h2>
+    <dl>
+      <dt>時間</dt><dd>2026 年 11 月 14 日（六）13:00–17:00<br><span class="sub">12:30 開放報到</span></dd>
+      <dt>地點</dt><dd>私立明道中學 明遠大樓一樓 鐵梅廳</dd>
+      <dt>地址</dt><dd><a href="https://www.google.com/maps/search/?api=1&amp;query=%E8%87%BA%E4%B8%AD%E5%B8%82%E7%83%8F%E6%97%A5%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B5497%E8%99%9F" target="_blank" rel="noopener">臺中市烏日區中山路一段497號</a></dd>
+      <dt>贈品</dt><dd>English ALOHA 英文閱讀出版系統個人版一季訂閱（價值 NT$1,800）</dd>
+    </dl>
+  </section>
+
   <div id="loading" class="card"><div class="spinner"></div><p class="msg" style="text-align:center">載入中…</p></div>
 
   <div id="fatal" class="card hidden"><p class="msg" id="fatalText"></p></div>
