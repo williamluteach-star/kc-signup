@@ -224,6 +224,8 @@
   const IS_ANDROID = /Android/i.test(UA);
   const IS_MOBILE = IS_ANDROID || /iPhone|iPad|iPod/i.test(UA);
   const LIFF_URL = "https://liff.line.me/" + LIFF_ID;
+  const LINE_SCHEME = "line://app/" + LIFF_ID;
+  const IN_APP = /FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram/i.test(UA);   // Messenger／FB／IG 內建瀏覽器
   const ANDROID_INTENT = "intent://liff.line.me/" + LIFF_ID +
     "#Intent;scheme=https;package=jp.naver.line.android;end";
 
@@ -267,13 +269,14 @@
   // 不是在 LINE 裡開啟（手機）→ 引導切到 LINE App
   function showOpenInLine(){
     hide("loading");
-    $("openLineBtn").href = IS_ANDROID ? ANDROID_INTENT : LIFF_URL;
+    // iPhone 的 Messenger／FB／IG 內建瀏覽器不吃一般 LINE 網址，按鈕改用 line:// 開啟
+    $("openLineBtn").href = IS_ANDROID ? ANDROID_INTENT : (IN_APP ? LINE_SCHEME : LIFF_URL);
     show("openInLine");
     if (IS_ANDROID) {
       location.href = ANDROID_INTENT;   // Android 自動跳轉
     } else if (!triedIosScheme()) {
       // iPhone：用舊格式觸發系統「要在 LINE 中打開嗎？」視窗（LINE 已宣布停用此格式，失效時仍有上方按鈕）
-      setTimeout(() => { location.href = "line://app/" + LIFF_ID; }, 300);
+      setTimeout(() => { location.href = LINE_SCHEME; }, 300);
     }
   }
 
