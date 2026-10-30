@@ -62,6 +62,18 @@
   .yt .play{position:absolute;inset:0;margin:auto;width:68px;height:48px;border-radius:12px;background:rgba(204,0,0,.92);
     color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center}
   .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .hl h2,.agenda h2{margin:0 0 8px;font-size:17px;color:var(--navy)}
+  .hl ol{list-style:none;margin:0;padding:0;counter-reset:hl}
+  .hl li{counter-increment:hl;position:relative;padding:12px 0 12px 38px;border-top:1px solid var(--line)}
+  .hl li:first-child{border-top:0}
+  .hl li::before{content:counter(hl,decimal-leading-zero);position:absolute;left:0;top:13px;font-weight:700;color:#b7861a;font-variant-numeric:tabular-nums}
+  .hl b{display:block;font-size:15px;color:var(--navy)}
+  .hl span{display:block;margin-top:3px;font-size:14px;color:var(--muted)}
+  .agenda table{width:100%;border-collapse:collapse;font-size:14px}
+  .agenda th{text-align:left;white-space:nowrap;vertical-align:top;padding:9px 12px 9px 0;color:#b7861a;font-weight:700;font-variant-numeric:tabular-nums}
+  .agenda td{padding:9px 0}
+  .agenda tr+tr th,.agenda tr+tr td{border-top:1px solid var(--line)}
+  .agenda .sub{margin:10px 0 0;font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -81,7 +93,7 @@
       <dt>費用</dt><dd>免費<br><span class="sub">洽詢電話 <a href="tel:0914028627">0914-028627</a></span></dd>
       <dt>贈品</dt><dd>English ALOHA 英文閱讀出版系統個人版一季訂閱（價值 NT$1,800）</dd>
     </dl>
-    <a class="link-more" href="#details">看邀請函、六大亮點與議程 ↓</a>
+    <a class="link-more" href="#details">看六大發表亮點與議程 ↓</a>
   </section>
 
   <div id="loading" class="card"><div class="spinner"></div><p class="msg" style="text-align:center">載入中…</p></div>
@@ -118,13 +130,38 @@
     <button id="closeBtn" type="button" class="hidden">關閉</button>
   </div>
 
-  <section id="details" class="card media">
+  <section id="details" class="card hl">
+    <h2>六大發表亮點</h2>
+    <ol>
+      <li><b>KC Online 科基語測 全新系統</b><span>搭載全新個人化語言模型（PLM）與考評診斷架構，精準直擊學生學習斷點，實現自動化適性檢測與教學閉環。</span></li>
+      <li><b>Lumos 雙語教材編輯系統</b><span>專為教學機構打造的 AI 智能備課與教材生成引擎，支援多模態素材一鍵轉化為符應 CEFR 標準的雙語教案。</span></li>
+      <li><b>English ALOHA 英文閱讀出版系統</b><span>結合實證閱讀科學與 AI 互動教練，從數位閱讀追蹤到出版即戰力，重塑孩子自主深度閱讀體驗。</span></li>
+      <li><b>Anglia 安格國際英語檢定語言研究中心</b><span>深化國際英語檢定測驗與標準對接，為機構提供最具公信力的跨國英語能力認證與教學支援體系。</span></li>
+      <li><b>Sohak 國中小數學系統</b><span>用圖像、提示與分步練習，讓學生不只會算，更真正看懂數學。</span></li>
+      <li><b>TOEIC 多益專門校</b><span>以 KC 多益智慧學習系統為核心的第二代專門校店型，即日起招募補習班與教育機構合作夥伴。</span></li>
+    </ol>
+  </section>
+
+  <section class="card agenda">
+    <h2>活動議程</h2>
+    <table>
+      <tr><th>12:30–13:00</th><td>貴賓報到</td></tr>
+      <tr><th>13:00–13:15</th><td>開幕致詞｜冠程教科 王冠程 教授</td></tr>
+      <tr><th>13:15–13:45</th><td>KC Online 科基語測 全新系統發表</td></tr>
+      <tr><th>13:45–14:15</th><td>Lumos 雙語教材編輯系統發表</td></tr>
+      <tr><th>14:15–14:45</th><td>English ALOHA 英文閱讀出版系統發表</td></tr>
+      <tr><th>14:45–15:05</th><td>茶敘交流</td></tr>
+      <tr><th>15:05–15:35</th><td>Anglia 安格國際英語檢定語言研究中心介紹</td></tr>
+      <tr><th>15:35–16:05</th><td>Sohak 國中小數學系統發表</td></tr>
+      <tr><th>16:05–16:35</th><td>TOEIC 多益專門校 合作說明</td></tr>
+      <tr><th>16:35–17:00</th><td>綜合座談・Q&amp;A 與合影</td></tr>
+    </table>
+    <p class="sub">主辦單位：冠程教科股份有限公司（KC Online）</p>
+  </section>
+
+  <section class="card media">
     <h2>邀請函</h2>
     <img src="img/invite.jpg" width="1080" height="1350" loading="lazy" alt="KC Online 全新智慧教育生態系新品發表會邀請函">
-    <h2>六大發表亮點</h2>
-    <img src="img/highlights.jpg" width="1080" height="1350" loading="lazy" alt="六大發表亮點">
-    <h2>活動議程</h2>
-    <img src="img/agenda.jpg" width="1080" height="1350" loading="lazy" alt="活動議程">
   </section>
 
   <details class="card media products">
@@ -214,13 +251,14 @@
 
     $("submitBtn").disabled = true;
     $("submitBtn").textContent = "送出中…";
+    let out;
     try {
       const res = await fetch(GAS_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ idToken, name: data.name, phone: data.phone, email: data.email })
       });
-      const out = await res.json();
+      out = await res.json();
       if (!out.ok) {
         if (out.error === "auth") {
           $("submitErr").textContent = "登入已過期，正在重新登入…";
@@ -236,11 +274,18 @@
       return;
     }
 
-    const text = "已報名 " + data.name + " " + data.phone.slice(-3);
-    // 一律用按鈕開啟官方帳號聊天室，避免訊息誤傳到其他聊天室
     hide("form"); show("done");
-    $("doneText").textContent = "最後一步：請按下方綠色按鈕，會開啟「科基語測」官方帳號聊天室，按「傳送」即完成。我們核對後會發送優惠券給您。";
-    $("sendLink").href = oaMessageUrl(text);
+    if (out.pushed) {
+      // 官方帳號已主動傳出兌換券
+      $("doneText").textContent = "報到兌換券已傳到「科基語測」官方帳號聊天室，請打開 LINE 查看。報到當天出示並按「使用優惠券」即可領取贈品。";
+      $("sendLink").textContent = "打開官方帳號聊天室";
+      $("sendLink").href = "https://line.me/R/oaMessage/" + encodeURIComponent(OA_ID) + "/";
+    } else {
+      // 不是好友等情況：用按鈕開啟官方帳號聊天室傳確認訊息，由排程核對後發券
+      const text = "已報名 " + data.name + " " + data.phone.slice(-3);
+      $("doneText").textContent = "最後一步：請按下方綠色按鈕，會開啟「科基語測」官方帳號聊天室，按「傳送」即完成。我們核對後會發送優惠券給您。";
+      $("sendLink").href = oaMessageUrl(text);
+    }
     show("sendLink");
   });
 
