@@ -47,6 +47,21 @@
   .info dd{margin:0}
   .info .sub{font-size:13px;color:var(--muted)}
   .info a{color:var(--navy-2)}
+  .link-more{display:inline-block;margin-top:12px;font-size:14px;font-weight:700;color:var(--navy-2)}
+  .media h2{margin:6px 0 8px;font-size:17px;color:var(--navy)}
+  .media img{display:block;width:100%;height:auto;border-radius:8px;margin:0 0 18px}
+  .products summary{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:700;color:var(--navy);cursor:pointer;list-style:none}
+  .products summary::-webkit-details-marker{display:none}
+  .products summary::after{content:"＋";color:var(--muted)}
+  .products[open] summary::after{content:"－"}
+  .products h3{margin:22px 0 8px;font-size:16px;color:var(--navy)}
+  .products p{margin:0 0 8px;font-size:14px}
+  .products p a{color:var(--navy-2)}
+  .yt{position:relative;aspect-ratio:16/9;margin:0 0 12px;border-radius:8px;overflow:hidden;cursor:pointer;
+    background:#000 center/cover no-repeat}
+  .yt .play{position:absolute;inset:0;margin:auto;width:68px;height:48px;border-radius:12px;background:rgba(204,0,0,.92);
+    color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 </style>
 </head>
 <body>
@@ -63,8 +78,10 @@
       <dt>時間</dt><dd>2026 年 11 月 14 日（六）13:00–17:00<br><span class="sub">12:30 開放報到</span></dd>
       <dt>地點</dt><dd>私立明道中學 明遠大樓一樓 鐵梅廳</dd>
       <dt>地址</dt><dd><a href="https://www.google.com/maps/search/?api=1&amp;query=%E8%87%BA%E4%B8%AD%E5%B8%82%E7%83%8F%E6%97%A5%E5%8D%80%E4%B8%AD%E5%B1%B1%E8%B7%AF%E4%B8%80%E6%AE%B5497%E8%99%9F" target="_blank" rel="noopener">臺中市烏日區中山路一段497號</a></dd>
+      <dt>費用</dt><dd>免費<br><span class="sub">洽詢電話 <a href="tel:0914028627">0914-028627</a></span></dd>
       <dt>贈品</dt><dd>English ALOHA 英文閱讀出版系統個人版一季訂閱（價值 NT$1,800）</dd>
     </dl>
+    <a class="link-more" href="#details">看邀請函、六大亮點與議程 ↓</a>
   </section>
 
   <div id="loading" class="card"><div class="spinner"></div><p class="msg" style="text-align:center">載入中…</p></div>
@@ -100,6 +117,41 @@
     <a id="sendLink" class="btn btn-line hidden" href="#">傳送報名確認到官方帳號</a>
     <button id="closeBtn" type="button" class="hidden">關閉</button>
   </div>
+
+  <section id="details" class="card media">
+    <h2>邀請函</h2>
+    <img src="img/invite.jpg" width="1080" height="1350" loading="lazy" alt="KC Online 全新智慧教育生態系新品發表會邀請函">
+    <h2>六大發表亮點</h2>
+    <img src="img/highlights.jpg" width="1080" height="1350" loading="lazy" alt="六大發表亮點">
+    <h2>活動議程</h2>
+    <img src="img/agenda.jpg" width="1080" height="1350" loading="lazy" alt="活動議程">
+  </section>
+
+  <details class="card media products">
+    <summary>看更多產品介紹（含影片）</summary>
+
+    <h3>KC Online 科基語測 2027 新系統</h3>
+    <img src="img/kc-online.jpg" width="1080" height="586" loading="lazy" alt="KC Online 科基語測 2027 新系統">
+
+    <h3>English ALOHA 英文閱讀出版系統</h3>
+    <p><a href="https://www.english-aloha.com" target="_blank" rel="noopener">www.english-aloha.com</a></p>
+    <div class="yt" data-id="LAekIwQ5-FM" data-title="English ALOHA Level Up 介紹說明影片" role="button" aria-label="播放 English ALOHA 介紹影片"><span class="play">▶</span></div>
+    <img src="img/aloha-1.jpg" width="1080" height="530" loading="lazy" alt="English ALOHA 首頁">
+    <img src="img/aloha-2.jpg" width="1080" height="610" loading="lazy" alt="English ALOHA 角色介紹">
+    <img src="img/aloha-3.jpg" width="1080" height="568" loading="lazy" alt="English ALOHA 選書畫面">
+    <img src="img/aloha-4.jpg" width="1080" height="615" loading="lazy" alt="English ALOHA 閱讀畫面">
+
+    <h3>Anglia 安格國際英語檢定語言研究中心</h3>
+    <div class="yt" data-id="MWTF1638JRo" data-title="歡迎加入 Anglia 安格國際英語檢定" role="button" aria-label="播放 Anglia 安格介紹影片"><span class="play">▶</span></div>
+    <img src="img/anglia.jpg" width="1080" height="619" loading="lazy" alt="Anglia 安格國際英語檢定">
+
+    <h3>Sohak 國中小數學系統</h3>
+    <div class="yt" data-id="N0YIqhE6p7Q" data-title="Sohak 數學系統" role="button" aria-label="播放 Sohak 數學系統影片"><span class="play">▶</span></div>
+    <img src="img/sohak.jpg" width="1080" height="623" loading="lazy" alt="Sohak 數學系統">
+
+    <h3>TOEIC 多益專門校</h3>
+    <img src="img/toeic.jpg" width="1080" height="1528" loading="lazy" alt="TOEIC 多益專門校 免費模考">
+  </details>
 </main>
 
 <footer>© 2026 科基語測 KC Online</footer>
@@ -193,6 +245,21 @@
   });
 
   $("closeBtn").addEventListener("click", () => liff.closeWindow());
+
+  // YouTube：先顯示縮圖，點了才載入播放器
+  document.querySelectorAll(".yt").forEach(el => {
+    const id = el.dataset.id;
+    el.style.backgroundImage = "url(https://i.ytimg.com/vi/" + id + "/hqdefault.jpg)";
+    el.addEventListener("click", () => {
+      const f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1";
+      f.title = el.dataset.title;
+      f.allow = "autoplay; encrypted-media; picture-in-picture";
+      f.allowFullscreen = true;
+      el.innerHTML = "";
+      el.appendChild(f);
+    }, { once: true });
+  });
 
   main();
 </script>
